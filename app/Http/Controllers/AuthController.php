@@ -62,6 +62,20 @@ class AuthController extends Controller
         ]);
     }
 
+    public function logout(Request $request)
+    {
+        $user = $request->user();
+
+        $user->currentAccessToken()?->delete();
+
+        \App\Models\RefreshToken::where('user_id', $user->id)->delete();
+
+        return response()->json([
+            'message' => 'Logout realizado com sucesso. Tokens revogados.'
+        ]);
+    }
+
+
     public function refreshToken(Request $request)
     {
         $request->validate([
