@@ -38,6 +38,8 @@ services:
             POSTGRES_PASSWORD: postgres
         ports:
             - "5432:5432"
+        volumes:
+            - postgres_data:/var/lib/postgresql/data
 
     minio:
         image: minio/minio
@@ -70,41 +72,12 @@ services:
             exit 0;
             "
 
-#
-#    minio:
-#        image: minio/minio
-#        ports:
-#            - '9000:9000'
-#            - '9001:9001'
-#        container_name: minio_storage
-#        restart: always
-#        command: server --console-address ":9001" /data
-#        networks:
-#            - seplagnetwork
-#        volumes:
-#            - 'minio_data:/data'
-#        environment:
-#            MINIO_ROOT_USER: 'minioadmin'
-#            MINIO_ROOT_PASSWORD: 'minioadmin'
-#            MINIO_DEFAULT_BUCKETS: 'fotos'
-#
-#    minio-setup:
-#        image: minio/mc
-#        depends_on:
-#            - minio
-#        entrypoint: >
-#            /bin/sh -c "
-#            mc alias set myminio http://minio:9000 minioadmin minioadmin &&
-#            mc mb myminio/fotos &&
-#            mc anonymous set none myminio/fotos &&
-#            sleep 5;
-#            exit 0;
-#            "
-
 networks:
     seplagnetwork:
         driver: bridge
 
 volumes:
     minio_data:
+        driver: local
+    postgres_data:
         driver: local

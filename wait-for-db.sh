@@ -2,14 +2,13 @@
 
 until nc -z -v -w30 $DB_HOST $DB_PORT
 do
-  echo "Waiting for database connection on $DB_HOST:$DB_PORT..."
+  echo "Aguardando conexão com o banco de dados em $DB_HOST:$DB_PORT..."
   sleep 1
 done
 
-echo "Database is up and running. Executing Laravel commands..."
+echo "O banco de dados está ativo. Executando comandos do Laravel..."
 
 php artisan key:generate
 php artisan migrate
 php artisan migrate:fresh --seed
-#php artisan db:seed --class=AdminSeeder
-#php artisan db:seed --class=BaseSeeder
+php artisan db:seed --class=AdminSeeder
