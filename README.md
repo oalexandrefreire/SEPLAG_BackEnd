@@ -33,6 +33,9 @@ Ela foi construída usando **Laravel 12**.
     - A API estará disponível em `http://localhost:8000`.
     - A documentação completa da API está disponível no Postman:
  <a href="https://documenter.getpostman.com/view/3438688/2sB2cX9MKL" target="_blank">👉 Abrir documentação no Postman</a>
+    - Para fins de teste é criado um usuário padrão automaticamente: 
+      - {"email": "admin@seplag.mt.gov.br", "password": "123456789"}
+    - Mais detalhes sobre o acesso a API estão na documentação do Postman.
 
 
 ## Observações

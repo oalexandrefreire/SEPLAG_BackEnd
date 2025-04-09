@@ -10,6 +10,5 @@ echo "O banco de dados está ativo. Executando comandos do Laravel..."
 
 composer install --no-interaction --prefer-dist --optimize-autoloader
 php artisan key:generate
-php artisan migrate
-php artisan migrate:fresh --seed
-php artisan db:seed --class=AdminSeeder
+php artisan migrate --force
+php artisan db:seed --class=AdminSeeder --force
