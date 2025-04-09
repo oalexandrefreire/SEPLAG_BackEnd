@@ -1,6 +1,7 @@
-# PROJETO PRÁTICO IMPLEMENTAÇÃO BACK-END: API REST - Gestão de Servidores
+# PROJETO PRÁTICO IMPLEMENTAÇÃO BACK-END
 
-Esta aplicação é uma API feita para gerenciar informações de servidores, unidades, lotações e também para fazer upload de fotos. Ela foi construída usando **Laravel 12**.
+Esta aplicação é uma API feita para gerenciar informações de servidores, unidades, lotações e também para fazer upload de fotos. 
+Ela foi construída usando **Laravel 12**.
 
 ## Dados de Inscrição
 
@@ -52,3 +53,6 @@ Abaixo você pode visualizar informações importantes extraídas do edital, com
 ![Regras 1](public/regras1.png)
 ![Fluxo](public/diagrama.png)
 ![Regras 2](public/regras.png)
+
+Para mais detalhes
+<a href="https://seletivo.seplag.mt.gov.br/ver-edital/152" target="_blank">👉 Acessar Edital</a>
