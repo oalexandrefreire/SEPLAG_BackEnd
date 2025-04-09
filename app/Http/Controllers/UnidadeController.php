@@ -31,22 +31,23 @@ class UnidadeController extends Controller
                 'end_logradouro' => 'required|string|max:200',
                 'end_numero' => 'required|integer',
                 'end_bairro' => 'required|string|max:100',
-                'cid_id' => 'nullable|exists:cidade,cid_id',
-                'cid_nome' => 'nullable|string|max:200',
-                'cid_uf' => 'nullable|string|max:2',
+                'cid_id' => 'nullable|exists:cidade,cid_id|required_without:cid_nome,cid_uf',
+                'cid_nome' => 'nullable|string|max:200|required_with:cid_uf|required_without:cid_id',
+                'cid_uf' => 'nullable|string|max:2|required_with:cid_nome|required_without:cid_id',
             ]);
 
             DB::beginTransaction();
 
-            if (isset($data['cid_id'])) {
-                $cid_id = $data['cid_id'];
-            } else {
-                $cidade = Cidade::firstOrCreate(
-                    ['cid_nome' => $data['cid_nome'], 'cid_uf' => $data['cid_uf']],
-                    ['cid_nome' => $data['cid_nome'], 'cid_uf' => $data['cid_uf']]
-                );
-                $cid_id = $cidade->cid_id;
-            }
+            $cid_id = $data['cid_id'] ?? optional(
+                Cidade::whereRaw('LOWER(cid_nome) = ? AND LOWER(cid_uf) = ?', [
+                    strtolower($data['cid_nome']),
+                    strtolower($data['cid_uf'])
+                ])->first()
+                ?? Cidade::create([
+                'cid_nome' => $data['cid_nome'],
+                'cid_uf' => $data['cid_uf'],
+            ])
+            )->cid_id;
 
             $unidade = Unidade::create([
                 'unid_nome' => $data['unid_nome'],
@@ -81,23 +82,24 @@ class UnidadeController extends Controller
             'end_logradouro' => 'required|string|max:200',
             'end_numero' => 'required|integer',
             'end_bairro' => 'required|string|max:100',
-            'cid_id' => 'nullable|exists:cidade,cid_id',
-            'cid_nome' => 'nullable|string|max:200',
-            'cid_uf' => 'nullable|string|max:2',
+            'cid_id' => 'nullable|exists:cidade,cid_id|required_without:cid_nome,cid_uf',
+            'cid_nome' => 'nullable|string|max:200|required_with:cid_uf|required_without:cid_id',
+            'cid_uf' => 'nullable|string|max:2|required_with:cid_nome|required_without:cid_id',
         ]);
 
         try {
             DB::beginTransaction();
 
-            if (isset($validated['cid_id'])) {
-                $cid_id = $validated['cid_id'];
-            } else {
-                $cidade = Cidade::firstOrCreate(
-                    ['cid_nome' => $validated['cid_nome'], 'cid_uf' => $validated['cid_uf']],
-                    ['cid_nome' => $validated['cid_nome'], 'cid_uf' => $validated['cid_uf']]
-                );
-                $cid_id = $cidade->cid_id;
-            }
+            $cid_id = $validated['cid_id'] ?? optional(
+                Cidade::whereRaw('LOWER(cid_nome) = ? AND LOWER(cid_uf) = ?', [
+                    strtolower($validated['cid_nome']),
+                    strtolower($validated['cid_uf'])
+                ])->first()
+                ?? Cidade::create([
+                'cid_nome' => $validated['cid_nome'],
+                'cid_uf' => $validated['cid_uf'],
+            ])
+            )->cid_id;
 
             $unidade = Unidade::findOrFail($id);
             $unidade->update([
