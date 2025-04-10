@@ -12,7 +12,7 @@ class FotoPessoaController extends Controller
     public function show($pes_id, FotoPessoaService $fotoPessoaService)
     {
         try {
-          $fotos = FotoPessoa::where('pes_id', $pes_id)->paginate(2);
+          $fotos = FotoPessoa::where('pes_id', $pes_id)->paginate(10);
 
           if ($fotos->isEmpty()) {
               return response()->json([
