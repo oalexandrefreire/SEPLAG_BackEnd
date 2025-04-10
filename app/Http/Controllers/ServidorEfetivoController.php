@@ -223,23 +223,33 @@ class ServidorEfetivoController extends Controller
         }
     }
 
-    public function servidoresPorUnidade($unid_id, FotoPessoaService $fotoPessoaService)
-    {
-        $servidores = ServidorEfetivo::whereHas('pessoa.lotacoes', function ($query) use ($unid_id) {
-            $query->where('unid_id', $unid_id);
-        })->with(['pessoa', 'pessoa.lotacoes.unidade', 'pessoa.fotos'])->get()->map(function ($servidor) use ($fotoPessoaService) {
-            return [
-                'Nome' => $servidor->pessoa->pes_nome,
-                'Idade' => Carbon::parse($servidor->pessoa->pes_data_nascimento)->age,
-                'Unidade de Lotação' => $servidor->pessoa->lotacoes->first()->unidade->unid_nome ?? null,
-                'Fotografia' => collect($servidor->pessoa->fotos)->map(function ($foto) use ($fotoPessoaService) {
-                    return $fotoPessoaService->generatePresignedUrl($foto->fp_hash);
-                }),
-            ];
-        });
+   public function servidoresPorUnidade($unid_id, FotoPessoaService $fotoPessoaService)
+   {
+       $servidoresPaginated = ServidorEfetivo::whereHas('pessoa.lotacoes', function ($query) use ($unid_id) {
+           $query->where('unid_id', $unid_id);
+       })->with(['pessoa', 'pessoa.lotacoes.unidade', 'pessoa.fotos'])->paginate(10);
 
-        return response()->json($servidores);
-    }
+       $servidoresTransformados = $servidoresPaginated->getCollection()->map(function ($servidor) use ($fotoPessoaService) {
+           return [
+               'Nome' => $servidor->pessoa->pes_nome,
+               'Idade' => Carbon::parse($servidor->pessoa->pes_data_nascimento)->age,
+               'Unidade de Lotação' => $servidor->pessoa->lotacoes->first()->unidade->unid_nome ?? null,
+               'Fotografia' => collect($servidor->pessoa->fotos)->map(function ($foto) use ($fotoPessoaService) {
+                   return $fotoPessoaService->generatePresignedUrl($foto->fp_hash);
+               }),
+           ];
+       });
+
+       $paginadoComTransformacao = new LengthAwarePaginator(
+           $servidoresTransformados,
+           $servidoresPaginated->total(),
+           $servidoresPaginated->perPage(),
+           $servidoresPaginated->currentPage(),
+           ['path' => request()->url(), 'query' => request()->query()]
+       );
+
+       return response()->json($paginadoComTransformacao);
+   }
 
     public function enderecoPorNome(Request $request)
     {

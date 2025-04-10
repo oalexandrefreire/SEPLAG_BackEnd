@@ -12,21 +12,20 @@ class FotoPessoaController extends Controller
     public function show($pes_id, FotoPessoaService $fotoPessoaService)
     {
         try {
-            $fotos = FotoPessoa::where('pes_id', $pes_id)->get();
+          $fotos = FotoPessoa::where('pes_id', $pes_id)->paginate(2);
 
-            if ($fotos->isEmpty()) {
-                return response()->json([
-                    'message' => 'Nenhuma foto encontrada para o pes_id fornecido.',
-                ], 404);
-            }
+          if ($fotos->isEmpty()) {
+              return response()->json([
+                  'message' => 'Nenhuma foto encontrada para o pes_id fornecido.',
+              ], 404);
+          }
 
-            $links = $fotos->map(function ($foto) use ($fotoPessoaService) {
-                return $fotoPessoaService->generatePresignedUrl($foto->fp_hash);
-            });
+          $fotos->getCollection()->transform(function ($foto) use ($fotoPessoaService) {
+              $foto->link_temporario = $fotoPessoaService->generatePresignedUrl($foto->fp_hash);
+              return $foto;
+          });
 
-            return response()->json([
-                'links_temporarios' => $links,
-            ]);
+          return response()->json($fotos);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Erro inesperado',
