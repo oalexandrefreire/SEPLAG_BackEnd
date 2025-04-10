@@ -34,7 +34,7 @@ class ServidorTemporarioController extends Controller
         });
 
         return response()->json([
-            'servidor_efetivo' => $servidor,
+            'servidor_temporario' => $servidor,
             'fotos_links_temporarios' => $links,
         ], 200);
     }
@@ -213,7 +213,7 @@ class ServidorTemporarioController extends Controller
             Pessoa::where('pes_id', $pessoaId)->delete();
             $servidor->delete();
             DB::commit();
-            return response()->json(['message' => 'Servidor efetivo removido com sucesso']);
+            return response()->json(['message' => 'Servidor removido com sucesso']);
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json(['message' => 'Erro ao excluir servidor: ' . $e->getMessage()]);
